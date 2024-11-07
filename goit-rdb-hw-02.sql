@@ -15,22 +15,39 @@ CREATE SCHEMA IF NOT EXISTS `mydb` DEFAULT CHARACTER SET utf8 ;
 USE `mydb` ;
 
 -- -----------------------------------------------------
--- Table `mydb`.`Goods`
+-- Table `mydb`.`Client`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`Goods` (
+CREATE TABLE IF NOT EXISTS `mydb`.`Client` (
   `id` INT NOT NULL,
-  `Name_of_goods` VARCHAR(45) NULL,
+  `address_of_client` VARCHAR(45) NULL,
+  `Name_of_client` VARCHAR(45) NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`Client`
+-- Table `mydb`.`Receipt`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`Client` (
+CREATE TABLE IF NOT EXISTS `mydb`.`Receipt` (
+  `Number_of_order` INT NOT NULL,
+  `id_client` INT NULL,
+  `date_of_order` DATE NULL,
+  PRIMARY KEY (`Number_of_order`),
+  INDEX `receipt-client_idx` (`id_client` ASC) VISIBLE,
+  CONSTRAINT `receipt-client`
+    FOREIGN KEY (`id_client`)
+    REFERENCES `mydb`.`Client` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`Goods`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`Goods` (
   `id` INT NOT NULL,
-  `Address_of_client` VARCHAR(45) NULL,
-  `Name_of_client` VARCHAR(45) NULL,
+  `name_of_goods` VARCHAR(45) NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
@@ -39,22 +56,19 @@ ENGINE = InnoDB;
 -- Table `mydb`.`Order`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `mydb`.`Order` (
-  `Number_of_order` INT NOT NULL,
-  `id_client` INT NULL,
-  `id_goods` INT NULL,
-  `quantity` INT NULL,
-  `date_of_order` DATE NULL,
-  PRIMARY KEY (`Number_of_order`),
-  INDEX `order-goods_idx` (`id_goods` ASC) VISIBLE,
-  INDEX `order-client_idx` (`id_client` ASC) VISIBLE,
-  CONSTRAINT `order-goods`
-    FOREIGN KEY (`id_goods`)
-    REFERENCES `mydb`.`Goods` (`id`)
+  `number_of_order` INT NULL,
+  `id_of_goods` INT NULL,
+  `quantity_of_goods` INT NULL,
+  INDEX `order-receipt_idx` (`number_of_order` ASC) VISIBLE,
+  INDEX `order-goods_idx` (`id_of_goods` ASC) VISIBLE,
+  CONSTRAINT `order-receipt`
+    FOREIGN KEY (`number_of_order`)
+    REFERENCES `mydb`.`Receipt` (`Number_of_order`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `order-client`
-    FOREIGN KEY (`id_client`)
-    REFERENCES `mydb`.`Client` (`id`)
+  CONSTRAINT `order-goods`
+    FOREIGN KEY (`id_of_goods`)
+    REFERENCES `mydb`.`Goods` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
